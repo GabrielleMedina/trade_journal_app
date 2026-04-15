@@ -1,42 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Trade Journal | Entries </title>
-    <link rel="stylesheet" href="static/style.css">
-</head>
-<body>
-    <header class="site-header">
-        <div class="container">
-            <h1 class="logo">
-                <a href="{{ url_for('dashboard') }}">Trade Journal</a>
-            </h1>
+{% extends "base.html" %}
 
-            <nav class="nav">
-                <ul class="nav-list">
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="entries.html">Entries</a></li>
-                    <li><a href="new_entry.html">New Entry</a></li>
-                    <li><a href="">Login</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+{% block title %}Entries | Trade Journal{% endblock %}
 
-    <main class="main-content">
-        <div class="container">
-            {% block content %}
-            {% endblock %}
-        </div>
-    </main>
+{% block content %}
+<section>
+    <h2>Journal Entries</h2>
+    <p><a href="{{ url_for('new_entry') }}">Create New Entry</a></p>
+</section>
 
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; 2026 Trade Journal</p>
-        </div>
-    </footer>
+<section>
+    {% if entries %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount Risked</th>
+                    <th>P&L</th>
+                    <th>Portfolio Change</th>
+                    <th>Result</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                    <tr>
+                        <td>{{ entry.date }}</td>
+                        <td>{{ entry.amount_risked }}</td>
+                        <td>{{ entry.pnl }}</td>
+                        <td>{{ entry.portfolio_change }}</td>
+                        <td>{{ entry.result }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_entry', entry_id=entry.id) }}">Edit</a>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-</body>
-</html>
+                            <form action="{{ url_for('delete_entry', entry_id=entry.id) }}" method="POST" style="display:inline;">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">
+                            <strong>Notes:</strong> {{ entry.notes }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No entries found.</p>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,42 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Trade Journal | Dashboard</title>
-    <link rel="stylesheet" href="static/style.css">
-</head>
-<body>
-    <header class="site-header">
-        <div class="container">
-            <h1 class="logo">
-                <a href="{{ url_for('dashboard') }}">Trade Journal</a>
-            </h1>
+{% extends "base.html" %}
 
-            <nav class="nav">
-                <ul class="nav-list">
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="entries.html">Entries</a></li>
-                    <li><a href="new_entry.html">New Entry</a></li>
-                    <li><a href="">Login</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+{% block title %}Dashboard | Trade Journal{% endblock %}
 
-    <main class="main-content">
-        <div class="container">
-            {% block content %}
-            {% endblock %}
-        </div>
-    </main>
+{% block content %}
+<section>
+    <h2>Dashboard</h2>
+    <p>Your trading performance overview.</p>
+</section>
 
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; 2026 Trade Journal</p>
-        </div>
-    </footer>
+<section>
+    <div>
+        <h3>Weekly P&L</h3>
+        <p>{{ weekly_pnl }}</p>
+    </div>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-</body>
-</html>
+    <div>
+        <h3>Monthly P&L</h3>
+        <p>{{ monthly_pnl }}</p>
+    </div>
+
+    <div>
+        <h3>Yearly P&L</h3>
+        <p>{{ yearly_pnl }}</p>
+    </div>
+
+    <div>
+        <h3>Win Rate</h3>
+        <p>{{ win_rate }}%</p>
+    </div>
+</section>
+
+<section>
+    <h3>Recent Entries</h3>
+
+    {% if entries %}
+        <ul>
+            {% for entry in entries %}
+                <li>
+                    <strong>{{ entry.date }}</strong> -
+                    {{ entry.pnl }} P&L -
+                    {{ entry.portfolio_change }} portfolio change
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No journal entries yet.</p>
+    {% endif %}
+</section>
+{% endblock %}
