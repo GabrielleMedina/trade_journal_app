@@ -1,42 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Trade Journal | New Entry</title>
-    <link rel="stylesheet" href="static/style.css">
-</head>
-<body>
-    <header class="site-header">
-        <div class="container">
-            <h1 class="logo">
-                <a href="{{ url_for('dashboard') }}">Trade Journal</a>
-            </h1>
+{% extends "base.html" %}
 
-            <nav class="nav">
-                <ul class="nav-list">
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="entries.html">Entries</a></li>
-                    <li><a href="new_entry.html">New Entry</a></li>
-                    <li><a href="">Login</a></li>
-                </ul>
-            </nav>
+{% block title %}New Entry | Trade Journal{% endblock %}
+
+{% block content %}
+<section>
+    <h2>Create New Journal Entry</h2>
+</section>
+
+<section>
+    <form action="{{ url_for('new_entry') }}" method="POST">
+        <div>
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required>
         </div>
-    </header>
 
-    <main class="main-content">
-        <div class="container">
-            {% block content %}
-            {% endblock %}
+        <div>
+            <label for="amount_risked">Amount Risked</label>
+            <input type="number" step="0.01" id="amount_risked" name="amount_risked" required>
         </div>
-    </main>
 
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; 2026 Trade Journal</p>
+        <div>
+            <label for="pnl">P&amp;L</label>
+            <input type="number" step="0.01" id="pnl" name="pnl" required>
         </div>
-    </footer>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-</body>
-</html>
+        <div>
+            <label for="portfolio_change">Portfolio Change</label>
+            <input type="number" step="0.01" id="portfolio_change" name="portfolio_change" required>
+        </div>
+
+        <div>
+            <label for="result">Result</label>
+            <select id="result" name="result" required>
+                <option value="">Select one</option>
+                <option value="win">Win</option>
+                <option value="loss">Loss</option>
+                <option value="breakeven">Break-even</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="notes">Journal Notes</label>
+            <textarea id="notes" name="notes" rows="8" placeholder="Write your thoughts for the day..."></textarea>
+        </div>
+
+        <div>
+            <button type="submit">Save Entry</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
