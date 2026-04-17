@@ -30,9 +30,9 @@ def dashboard():
 
 @app.route("/entries")
 def entries():
-    return render_template("entries.html")
-
-    
+    entries = JournalEntry.query.all()
+    return render_template("entries.html", entries=entries)
+   
 @app.route("/new_entry", methods=['POST', 'GET'])
 def new_entry():
     if request.method == 'POST':
@@ -54,9 +54,16 @@ def new_entry():
         try: 
             db.session.add(new_entry)
             db.session.commit()
-            return redirect('/new_entry')
+            return redirect(url_for("entries"))
         except:
             return 'There was an issue adding your new entry.'
     return render_template("new_entry.html")
 
+@app.route('/edit_entry/<int:entry_id>')
+def edit_entry(entry_id):
+    return redirect(url_for("entries"))
+
+@app.route('/delete_entry/<int:entry_id>', methods=["POST"])
+def delete_entry(entry_id):
+    return redirect(url_for("entries"))
 
