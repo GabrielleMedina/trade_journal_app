@@ -3,48 +3,58 @@
 {% block title %}Dashboard | Trade Journal{% endblock %}
 
 {% block content %}
-<section>
-    <h2>Dashboard</h2>
-    <p>Your trading performance overview.</p>
+<section class="mb-4">
+    <h2 class="mb-2">Dashboard</h2>
+    <p class="text-light-emphasis">Your trading performance overview.</p>
+</section>
+
+<section class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card p-3 h-100">
+            <h5 class="card-title">Weekly P&amp;L</h5>
+            <p class="card-text fs-4 mb-0">{{ weekly_pnl }}</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-3 h-100">
+            <h5 class="card-title">Monthly P&amp;L</h5>
+            <p class="card-text fs-4 mb-0">{{ monthly_pnl }}</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-3 h-100">
+            <h5 class="card-title">Yearly P&amp;L</h5>
+            <p class="card-text fs-4 mb-0">{{ yearly_pnl }}</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-3 h-100">
+            <h5 class="card-title">Win Rate</h5>
+            <p class="card-text fs-4 mb-0">{{ win_rate }}%</p>
+        </div>
+    </div>
 </section>
 
 <section>
-    <div>
-        <h3>Weekly P&L</h3>
-        <p>{{ weekly_pnl }}</p>
+    <div class="card p-3">
+        <h3 class="mb-3">Recent Entries</h3>
+
+        {% if entries %}
+            <ul class="list-group list-group-flush">
+                {% for entry in entries %}
+                    <li class="list-group-item bg-transparent text-light border-secondary">
+                        <strong>{{ entry.date }}</strong> —
+                        {{ entry.pnl }} P&amp;L —
+                        {{ entry.portfolio_change }} portfolio change
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="mb-0">No journal entries yet.</p>
+        {% endif %}
     </div>
-
-    <div>
-        <h3>Monthly P&L</h3>
-        <p>{{ monthly_pnl }}</p>
-    </div>
-
-    <div>
-        <h3>Yearly P&L</h3>
-        <p>{{ yearly_pnl }}</p>
-    </div>
-
-    <div>
-        <h3>Win Rate</h3>
-        <p>{{ win_rate }}%</p>
-    </div>
-</section>
-
-<section>
-    <h3>Recent Entries</h3>
-
-    {% if entries %}
-        <ul>
-            {% for entry in entries %}
-                <li>
-                    <strong>{{ entry.date }}</strong> -
-                    {{ entry.pnl }} P&L -
-                    {{ entry.portfolio_change }} portfolio change
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No journal entries yet.</p>
-    {% endif %}
 </section>
 {% endblock %}

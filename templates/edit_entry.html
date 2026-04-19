@@ -3,80 +3,92 @@
 {% block title %}Edit Entry | Trade Journal{% endblock %}
 
 {% block content %}
-<section>
-    <h2>Edit Journal Entry</h2>
-    <p><a href="{{ url_for('entries') }}">← Back to Entries</a></p>
+<section class="mb-4">
+    <h2 class="mb-1">Edit Journal Entry</h2>
+    <p class="text-light-emphasis mb-0">Update your saved trading journal entry.</p>
 </section>
 
 <section>
-    <form action="{{ url_for('edit_entry', entry_id=entry.id) }}" method="POST">
+    <div class="card bg-dark text-light p-4">
+        <form action="{{ url_for('edit_entry', entry_id=entry.id) }}" method="POST">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="date" class="form-label">Date</label>
+                    <input
+                        type="date"
+                        id="date"
+                        name="date"
+                        class="form-control"
+                        value="{{ entry.date }}"
+                        required
+                    >
+                </div>
 
-        <div>
-            <label for="date">Date</label>
-            <input 
-                type="date" 
-                id="date" 
-                name="date"
-                value="{{ entry.date }}"
-                required>
-        </div>
+                <div class="col-md-6">
+                    <label for="amount_risked" class="form-label">Amount Risked</label>
+                    <input
+                        type="number"
+                        step="0.01"
+                        id="amount_risked"
+                        name="amount_risked"
+                        class="form-control"
+                        value="{{ entry.amount_risked }}"
+                        required
+                    >
+                </div>
 
-        <div>
-            <label for="amount_risked">Amount Risked</label>
-            <input 
-                type="number" 
-                step="0.01"
-                id="amount_risked"
-                name="amount_risked"
-                value="{{ entry.amount_risked }}"
-                required>
-        </div>
+                <div class="col-md-6">
+                    <label for="pnl" class="form-label">P&amp;L</label>
+                    <input
+                        type="number"
+                        step="0.01"
+                        id="pnl"
+                        name="pnl"
+                        class="form-control"
+                        value="{{ entry.pnl }}"
+                        required
+                    >
+                </div>
 
-        <div>
-            <label for="pnl">P&amp;L</label>
-            <input 
-                type="number" 
-                step="0.01"
-                id="pnl"
-                name="pnl"
-                value="{{ entry.pnl }}"
-                required>
-        </div>
+                <div class="col-md-6">
+                    <label for="portfolio_change" class="form-label">Portfolio Change</label>
+                    <input
+                        type="number"
+                        step="0.01"
+                        id="portfolio_change"
+                        name="portfolio_change"
+                        class="form-control"
+                        value="{{ entry.portfolio_change }}"
+                        required
+                    >
+                </div>
 
-        <div>
-            <label for="portfolio_change">Portfolio Change</label>
-            <input 
-                type="number" 
-                step="0.01"
-                id="portfolio_change"
-                name="portfolio_change"
-                value="{{ entry.portfolio_change }}"
-                required>
-        </div>
+                <div class="col-md-6">
+                    <label for="result" class="form-label">Result</label>
+                    <select id="result" name="result" class="form-select" required>
+                        <option value="win" {% if entry.result == "win" %}selected{% endif %}>Win</option>
+                        <option value="loss" {% if entry.result == "loss" %}selected{% endif %}>Loss</option>
+                        <option value="breakeven" {% if entry.result == "breakeven" %}selected{% endif %}>Break-even</option>
+                    </select>
+                </div>
 
-        <div>
-            <label for="result">Result</label>
-            <select id="result" name="result" required>
-                <option value="win" {% if entry.result == "win" %}selected{% endif %}>Win</option>
-                <option value="loss" {% if entry.result == "loss" %}selected{% endif %}>Loss</option>
-                <option value="breakeven" {% if entry.result == "breakeven" %}selected{% endif %}>Break-even</option>
-            </select>
-        </div>
+                <div class="col-12">
+                    <label for="notes" class="form-label">Journal Notes</label>
+                    <textarea
+                        id="notes"
+                        name="notes"
+                        rows="8"
+                        class="form-control"
+                        required
+                    >{{ entry.notes }}</textarea>
+                </div>
 
-        <div>
-            <label for="notes">Journal Notes</label>
-            <textarea 
-                id="notes"
-                name="notes"
-                rows="8"
-                required>{{ entry.notes }}</textarea>
-        </div>
-
-        <div>
-            <button type="submit">Save Changes</button>
-            <a href="{{ url_for('entries') }}">Cancel</a>
-        </div>
-
-    </form>
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="{{ url_for('entries') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
 </section>
 {% endblock %}

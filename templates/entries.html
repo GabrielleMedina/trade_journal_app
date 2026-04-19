@@ -3,50 +3,59 @@
 {% block title %}Entries | Trade Journal{% endblock %}
 
 {% block content %}
-<section>
-    <h2>Journal Entries</h2>
-    <p><a href="{{ url_for('new_entry') }}">Create New Entry</a></p>
+<section class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Journal Entries</h2>
+        <p class="text-light-emphasis mb-0">Review, edit, and manage your trading journal entries.</p>
+    </div>
+    <a href="{{ url_for('new_entry') }}" class="btn btn-primary">Create New Entry</a>
 </section>
 
 <section>
     {% if entries %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Amount Risked</th>
-                    <th>P&L</th>
-                    <th>Portfolio Change</th>
-                    <th>Result</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for entry in entries %}
-                    <tr>
-                        <td>{{ entry.date }}</td>
-                        <td>{{ entry.amount_risked }}</td>
-                        <td>{{ entry.pnl }}</td>
-                        <td>{{ entry.portfolio_change }}</td>
-                        <td>{{ entry.result }}</td>
-                        <td>
-                            <a href="{{ url_for('edit_entry', entry_id=entry.id) }}">Edit</a>
+        <div class="card p-3">
+            <div class="table-responsive">
+                <table class="table table-dark table-striped table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount Risked</th>
+                            <th>P&amp;L</th>
+                            <th>Portfolio Change</th>
+                            <th>Result</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in entries %}
+                            <tr>
+                                <td>{{ entry.date }}</td>
+                                <td>{{ entry.amount_risked }}</td>
+                                <td>{{ entry.pnl }}</td>
+                                <td>{{ entry.portfolio_change }}</td>
+                                <td>{{ entry.result }}</td>
+                                <td>
+                                    <a href="{{ url_for('edit_entry', entry_id=entry.id) }}" class="btn btn-sm btn-warning me-2">Edit</a>
 
-                            <form action="{{ url_for('delete_entry', entry_id=entry.id) }}" method="POST" style="display:inline;">
-                                <button type="submit">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="6">
-                            <strong>Notes:</strong> {{ entry.notes }}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                                    <form action="{{ url_for('delete_entry', entry_id=entry.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" class="text-light-emphasis">
+                                    <strong>Notes:</strong> {{ entry.notes }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     {% else %}
-        <p>No entries found.</p>
+        <div class="card p-4">
+            <p class="mb-0">No entries found.</p>
+        </div>
     {% endif %}
 </section>
 {% endblock %}
