@@ -12,21 +12,33 @@
     <div class="col-md-3">
         <div class="card p-3 h-100">
             <h5 class="card-title">Weekly P&amp;L</h5>
-            <p class="card-text fs-4 mb-0">{{ weekly_pnl }}</p>
+            {% if weekly_pnl > 0 %}
+            <p class="card-text fs-4 mb-0 text_positive">{{ weekly_pnl }}</p>
+            {% else %}
+            <p class="card-text fs-4 mb-0 text_negative">{{ weekly_pnl }}</p>
+            {% endif %}
         </div>
     </div>
 
     <div class="col-md-3">
         <div class="card p-3 h-100">
             <h5 class="card-title">Monthly P&amp;L</h5>
-            <p class="card-text fs-4 mb-0">{{ monthly_pnl }}</p>
+            {% if monthly_pnl > 0 %}
+            <p class="card-text fs-4 mb-0 text_positive">{{ monthly_pnl }}</p>
+            {% else %}
+            <p class="card-text fs-4 mb-0 text_negative">{{ monthly_pnl }}</p>
+            {% endif %}
         </div>
     </div>
 
     <div class="col-md-3">
         <div class="card p-3 h-100">
             <h5 class="card-title">Yearly P&amp;L</h5>
-            <p class="card-text fs-4 mb-0">{{ yearly_pnl }}</p>
+            {% if yearly_pnl > 0 %}
+            <p class="card-text fs-4 mb-0 text_positive">{{ yearly_pnl }}</p>
+            {% else %}
+            <p class="card-text fs-4 mb-0 text_negative">{{ yearly_pnl }}</p>
+            {% endif %}
         </div>
     </div>
 
@@ -44,13 +56,27 @@
 
         {% if entries %}
             <ul class="list-group list-group-flush">
-                {% for entry in entries %}
-                    <li class="list-group-item bg-transparent text-light border-secondary">
-                        <strong>{{ entry.date }}</strong> —
-                        {{ entry.pnl }} P&amp;L —
-                        {{ entry.portfolio_change }} portfolio change
-                    </li>
-                {% endfor %}
+            {% for entry in entries %}
+                    {% if entry.portfolio_change > 0 %}
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong>{{ entry.date }}</strong> —
+                            {{ entry.pnl }} P&amp;L —
+                            <span class="text_positive">{{ entry.portfolio_change }}</span> portfolio change
+                        </li>
+                    {% elif entry.portfolio_change < 0 %}
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong>{{ entry.date }}</strong> —
+                            {{ entry.pnl }} P&amp;L —
+                            <span class="text_negative">{{ entry.portfolio_change }}</span> portfolio change
+                        </li>
+                    {% else %}
+                        <li class="list-group-item bg-transparent text-light border-secondary">
+                            <strong>{{ entry.date }}</strong> —
+                            {{ entry.pnl }} P&amp;L —
+                            <span>{{ entry.portfolio_change }}</span> portfolio change
+                        </li>
+                    {% endif %}
+            {% endfor %}
             </ul>
         {% else %}
             <p class="mb-0">No journal entries yet.</p>

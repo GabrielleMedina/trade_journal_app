@@ -29,3 +29,10 @@ textarea:focus {
 label {
     color: #f8f9fa;
 }
+
+.text_positive { 
+    color: greenyellow;
+}
+.text_negative { 
+    color: red
+}

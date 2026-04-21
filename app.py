@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect
 import uuid
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///trade.db'
@@ -9,7 +9,7 @@ db = SQLAlchemy(app)
 
 class JournalEntry(db.Model): 
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, default=datetime.now)
+    date = db.Column(db.Date)
     amount_risked =  db.Column(db.Float, default = 0)
     pnl = db.Column(db.Float, default = 0)
     portfolio_change = db.Column(db.Float, default = 0)
@@ -26,7 +26,54 @@ def index():
 
 @app.route("/dashboard")
 def dashboard():
-    return render_template("dashboard.html")
+    entries = JournalEntry.query.all()
+    recent_entries = []
+
+    date_now = datetime.now()
+    weekly_date = (date_now - timedelta(days=7))
+    monthly_date = (date_now - timedelta(days=30))
+    yearly_date = (date_now - timedelta(days=365))
+    win_count = 0
+
+    yearly_entries = []
+    monthly_entries = [] 
+    weekly_entries = []
+
+
+    for entry in entries: 
+        if entry.date >= yearly_date.date():
+            yearly_entries.append(entry.pnl)
+        if entry.date >= monthly_date.date():
+            monthly_entries.append(entry.pnl)
+        if entry.date >= weekly_date.date():
+            weekly_entries.append(entry.pnl)
+            recent_entries.append(entry)
+            
+    yearly_pnl = sum(yearly_entries)
+    monthly_pnl = sum(monthly_entries)
+    weekly_pnl = sum(weekly_entries)
+
+    
+    for entry in entries: 
+        if entry.result == 'win': 
+            win_count += 1
+            print(win_count)
+        if len(entries) > 0:
+            win_rate = round((win_count / len(entries)) * 100, 2)
+        else:
+            win_rate = 0
+    
+    round(win_rate, 2)
+    
+
+
+    return render_template(
+        "dashboard.html", 
+        weekly_pnl=weekly_pnl, 
+        monthly_pnl=monthly_pnl, 
+        yearly_pnl=yearly_pnl, 
+        win_rate=win_rate, 
+        entries=recent_entries )
 
 @app.route("/entries")
 def entries():
