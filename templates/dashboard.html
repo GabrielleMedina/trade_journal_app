@@ -50,36 +50,111 @@
     </div>
 </section>
 
+<section class="mb-4">
+    <div class="card p-3 shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">P&amp;L Over Time</h5>
+            <small class="text-light-emphasis">Performance trend</small>
+        </div>
+
+        <div style="height: 260px;">
+            <canvas id="pnlChart"></canvas>
+        </div>
+    </div>
+</section>
+
+<script>
+const chartLabels = {{ chart_labels | tojson }};
+const chartValues = {{ chart_values | tojson }};
+
+// final value determines line color
+const lastValue = chartValues.length > 0
+    ? chartValues[chartValues.length - 1]
+    : 0;
+
+const lineColor = lastValue >= 0 ? "#22c55e" : "#ef4444";
+
+const ctx = document.getElementById('pnlChart');
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: chartLabels,
+        datasets: [{
+            label: 'P&L',
+            data: chartValues,
+            borderColor: lineColor,
+            backgroundColor: lineColor,
+            tension: 0.35,
+            borderWidth: 2,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            fill: false
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        plugins: {
+            legend: {
+                labels: {
+                    color: "#f8f9fa"
+                }
+            }
+        },
+
+        scales: {
+            x: {
+                ticks: {
+                    color: "#adb5bd"
+                },
+                grid: {
+                    color: "rgba(255,255,255,0.05)"
+                }
+            },
+            y: {
+                ticks: {
+                    color: "#adb5bd"
+                },
+                grid: {
+                    color: "rgba(255,255,255,0.05)"
+                }
+            }
+        }
+    }
+});
+</script>
 <section>
     <div class="card p-3">
         <h3 class="mb-3">Recent Entries</h3>
 
         {% if entries %}
-            <ul class="list-group list-group-flush">
+        <ul class="list-group list-group-flush">
             {% for entry in entries %}
-                    {% if entry.portfolio_change > 0 %}
-                        <li class="list-group-item bg-transparent text-light border-secondary">
-                            <strong>{{ entry.date }}</strong> —
-                            {{ entry.pnl }} P&amp;L —
-                            <span class="text_positive">{{ entry.portfolio_change }}</span> portfolio change
-                        </li>
-                    {% elif entry.portfolio_change < 0 %}
-                        <li class="list-group-item bg-transparent text-light border-secondary">
-                            <strong>{{ entry.date }}</strong> —
-                            {{ entry.pnl }} P&amp;L —
-                            <span class="text_negative">{{ entry.portfolio_change }}</span> portfolio change
-                        </li>
-                    {% else %}
-                        <li class="list-group-item bg-transparent text-light border-secondary">
-                            <strong>{{ entry.date }}</strong> —
-                            {{ entry.pnl }} P&amp;L —
-                            <span>{{ entry.portfolio_change }}</span> portfolio change
-                        </li>
-                    {% endif %}
-            {% endfor %}
-            </ul>
+            {% if entry.portfolio_change > 0 %}
+            <li class="list-group-item bg-transparent text-light border-secondary">
+                <strong>{{ entry.date }}</strong> —
+                {{ entry.pnl }} P&amp;L —
+                <span class="text_positive">{{ entry.portfolio_change }}</span> portfolio change
+            </li>
+            {% elif entry.portfolio_change < 0 %} <li
+                class="list-group-item bg-transparent text-light border-secondary">
+                <strong>{{ entry.date }}</strong> —
+                {{ entry.pnl }} P&amp;L —
+                <span class="text_negative">{{ entry.portfolio_change }}</span> portfolio change
+                </li>
+                {% else %}
+                <li class="list-group-item bg-transparent text-light border-secondary">
+                    <strong>{{ entry.date }}</strong> —
+                    {{ entry.pnl }} P&amp;L —
+                    <span>{{ entry.portfolio_change }}</span> portfolio change
+                </li>
+                {% endif %}
+                {% endfor %}
+        </ul>
         {% else %}
-            <p class="mb-0">No journal entries yet.</p>
+        <p class="mb-0">No journal entries yet.</p>
         {% endif %}
     </div>
 </section>

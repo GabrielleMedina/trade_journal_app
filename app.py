@@ -26,7 +26,7 @@ def index():
 
 @app.route("/dashboard")
 def dashboard():
-    entries = JournalEntry.query.all()
+    entries = JournalEntry.query.order_by(JournalEntry.date.asc()).all()
     recent_entries = []
 
     date_now = datetime.now()
@@ -39,12 +39,17 @@ def dashboard():
     monthly_entries = [] 
     weekly_entries = []
 
+    chart_labels = []
+    chart_values = []
+
 
     for entry in entries: 
         if entry.date >= yearly_date.date():
             yearly_entries.append(entry.pnl)
         if entry.date >= monthly_date.date():
             monthly_entries.append(entry.pnl)
+            chart_labels.append(entry.date.strftime("%Y-%m-%d"))
+            chart_values.append(entry.pnl)
         if entry.date >= weekly_date.date():
             weekly_entries.append(entry.pnl)
             recent_entries.append(entry)
@@ -64,8 +69,6 @@ def dashboard():
             win_rate = 0
     
     round(win_rate, 2)
-    
-
 
     return render_template(
         "dashboard.html", 
@@ -73,7 +76,9 @@ def dashboard():
         monthly_pnl=monthly_pnl, 
         yearly_pnl=yearly_pnl, 
         win_rate=win_rate, 
-        entries=recent_entries )
+        entries=recent_entries,
+        chart_labels=chart_labels,
+        chart_values=chart_values )
 
 @app.route("/entries")
 def entries():

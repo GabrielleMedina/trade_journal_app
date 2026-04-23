@@ -31,8 +31,8 @@ label {
 }
 
 .text_positive { 
-    color: greenyellow;
+    color: #22c55e;
 }
 .text_negative { 
-    color: red
+    color: #ef4444;
 }
