@@ -41,6 +41,7 @@ def dashboard():
 
     chart_labels = []
     chart_values = []
+    calendar_events = []
 
 
     for entry in entries: 
@@ -50,9 +51,37 @@ def dashboard():
             monthly_entries.append(entry.pnl)
             chart_labels.append(entry.date.strftime("%Y-%m-%d"))
             chart_values.append(entry.pnl)
+            
+            if entry.pnl > 0:
+                event_color = "#22c55e"
+                calendar_events.append({
+                    "title": f"{entry.pnl} P&L",
+                    "start": entry.date.strftime("%Y-%m-%d"),
+                    "backgroundColor": event_color,
+                    "borderColor": event_color
+                })
+            if entry.pnl < 0:
+                event_color = "#ef4444"
+                calendar_events.append({
+                    "title": f"{entry.pnl} P&L",
+                    "start": entry.date.strftime("%Y-%m-%d"),
+                    "backgroundColor": event_color,
+                    "borderColor": event_color
+                })
+            if entry.pnl == 0:
+                event_color = "#A9A9A9"
+                calendar_events.append({
+                    "title": f"{entry.pnl} P&L",
+                    "start": entry.date.strftime("%Y-%m-%d"),
+                    "backgroundColor": event_color,
+                    "borderColor": event_color
+                })
+
+            print(calendar_events)
         if entry.date >= weekly_date.date():
             weekly_entries.append(entry.pnl)
             recent_entries.append(entry)
+
             
     yearly_pnl = sum(yearly_entries)
     monthly_pnl = sum(monthly_entries)
@@ -62,7 +91,6 @@ def dashboard():
     for entry in entries: 
         if entry.result == 'win': 
             win_count += 1
-            print(win_count)
         if len(entries) > 0:
             win_rate = round((win_count / len(entries)) * 100, 2)
         else:
@@ -78,7 +106,8 @@ def dashboard():
         win_rate=win_rate, 
         entries=recent_entries,
         chart_labels=chart_labels,
-        chart_values=chart_values )
+        chart_values=chart_values,
+        calendar_events=calendar_events)
 
 @app.route("/entries")
 def entries():

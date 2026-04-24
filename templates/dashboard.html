@@ -3,6 +3,8 @@
 {% block title %}Dashboard | Trade Journal{% endblock %}
 
 {% block content %}
+
+
 <section class="mb-4">
     <h2 class="mb-2">Dashboard</h2>
     <p class="text-light-emphasis">Your trading performance overview.</p>
@@ -64,68 +66,68 @@
 </section>
 
 <script>
-const chartLabels = {{ chart_labels | tojson }};
-const chartValues = {{ chart_values | tojson }};
+    const chartLabels = {{ chart_labels | tojson }};
+    const chartValues = {{ chart_values | tojson }};
 
-// final value determines line color
-const lastValue = chartValues.length > 0
-    ? chartValues[chartValues.length - 1]
-    : 0;
+    // final value determines line color
+    const lastValue = chartValues.length > 0
+        ? chartValues[chartValues.length - 1]
+        : 0;
 
-const lineColor = lastValue >= 0 ? "#22c55e" : "#ef4444";
+    const lineColor = lastValue >= 0 ? "#22c55e" : "#ef4444";
 
-const ctx = document.getElementById('pnlChart');
+    const ctx = document.getElementById('pnlChart');
 
-new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: chartLabels,
-        datasets: [{
-            label: 'P&L',
-            data: chartValues,
-            borderColor: lineColor,
-            backgroundColor: lineColor,
-            tension: 0.35,
-            borderWidth: 2,
-            pointRadius: 3,
-            pointHoverRadius: 5,
-            fill: false
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-
-        plugins: {
-            legend: {
-                labels: {
-                    color: "#f8f9fa"
-                }
-            }
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: 'P&L',
+                data: chartValues,
+                borderColor: lineColor,
+                backgroundColor: lineColor,
+                tension: 0.35,
+                borderWidth: 2,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+                fill: false
+            }]
         },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
 
-        scales: {
-            x: {
-                ticks: {
-                    color: "#adb5bd"
-                },
-                grid: {
-                    color: "rgba(255,255,255,0.05)"
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "#f8f9fa"
+                    }
                 }
             },
-            y: {
-                ticks: {
-                    color: "#adb5bd"
+
+            scales: {
+                x: {
+                    ticks: {
+                        color: "#adb5bd"
+                    },
+                    grid: {
+                        color: "rgba(255,255,255,0.05)"
+                    }
                 },
-                grid: {
-                    color: "rgba(255,255,255,0.05)"
+                y: {
+                    ticks: {
+                        color: "#adb5bd"
+                    },
+                    grid: {
+                        color: "rgba(255,255,255,0.05)"
+                    }
                 }
             }
         }
-    }
-});
+    });
 </script>
-<section>
+<section class="mb-3">
     <div class="card p-3">
         <h3 class="mb-3">Recent Entries</h3>
 
@@ -156,6 +158,25 @@ new Chart(ctx, {
         {% else %}
         <p class="mb-0">No journal entries yet.</p>
         {% endif %}
+    </div>
+</section>
+<section class="mb-4">
+    <div class="card p-3">
+        <h4 class="mb-3">Trading Calendar</h4>
+        <div id="calendar"></div>
+    </div>
+        <script>
+            const calendarEvents = {{ calendar_events | tojson }};
+            const calendarEl = document.getElementById("calendar");
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                height: 300,
+                ascpectRatio: 2,
+                initialView: "dayGridMonth",
+                events: calendarEvents
+            });
+            calendar.render();
+        </script>
     </div>
 </section>
 {% endblock %}

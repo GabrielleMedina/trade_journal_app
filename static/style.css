@@ -36,3 +36,60 @@ label {
 .text_negative { 
     color: #ef4444;
 }
+
+/* FullCalendar Dark Theme */
+.fc {
+    color: #f8f9fa;
+}
+
+.fc .fc-toolbar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.fc .fc-button {
+    background-color: #212529;
+    border: 1px solid #495057;
+    color: #f8f9fa;
+}
+
+.fc .fc-button:hover {
+    background-color: #343a40;
+}
+
+.fc .fc-button-active {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th,
+.fc-theme-standard .fc-scrollgrid {
+    border-color: #343a40;
+}
+
+.fc-daygrid-day {
+    background-color: #1e1e1e;
+}
+
+.fc-day-today {
+    background-color: rgba(13, 110, 253, 0.15) !important;
+}
+
+.fc-event {
+    font-size: 0.85rem;
+    border-radius: 6px;
+    padding: 2px 4px;
+    font-weight: 500;
+}
+/* FullCalendar text links */
+.fc a {
+    color: #f8f9fa !important;
+    text-decoration: none !important;
+}
+
+.fc-col-header-cell-cushion,
+.fc-daygrid-day-number {
+    color: #f8f9fa !important;
+    text-decoration: none !important;
+}
