@@ -67,6 +67,10 @@ label {
 .fc-theme-standard .fc-scrollgrid {
     border-color: #343a40;
 }
+.fc-day-grid-container.fc-scroller { 
+    height: auto!important;
+    overflow-y: auto;
+}
 
 .fc-daygrid-day {
     background-color: #1e1e1e;
