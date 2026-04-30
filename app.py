@@ -30,14 +30,17 @@ def dashboard():
     weekly_date = (date_now - timedelta(days=7))
     monthly_date = (date_now - timedelta(days=30))
     yearly_date = (date_now - timedelta(days=365))
-    entries = JournalEntry.query.filter(JournalEntry.date >= yearly_date.date()).order_by(JournalEntry.date.asc()).all()
-    recent_entries = []
+
+    yearly_entries = JournalEntry.query.filter(JournalEntry.date >= yearly_date.date()).order_by(JournalEntry.date.asc()).all()
+    monthly_entries = JournalEntry.query.filter(JournalEntry.date >= monthly_date.date()).order_by(JournalEntry.date.asc()).all()
+    weekly_entries = JournalEntry.query.filter(JournalEntry.date >= weekly_date.date()).order_by(JournalEntry.date.asc()).all()
+
+    yearly_pnl = sum([entry.pnl for entry in yearly_entries])
+    monthly_pnl = sum([entry.pnl for entry in monthly_entries])
+    weekly_pnl = sum([entry.pnl for entry in weekly_entries])
+
     win_count = 0
     win_rate = 0
-
-    yearly_entries = []
-    monthly_entries = [] 
-    weekly_entries = []
 
     chart_labels = []
     chart_values = []
@@ -45,56 +48,44 @@ def dashboard():
 
     calendar_events = []
 
-
-    for entry in entries: 
-        if entry.date >= yearly_date.date():
-            yearly_entries.append(entry.pnl)
-        if entry.date >= monthly_date.date():
-            monthly_entries.append(entry.pnl)
-            chart_labels.append(entry.date.strftime("%Y-%m-%d"))
-            running_total += entry.pnl
-            chart_values.append(running_total)
-            
-            if entry.pnl > 0:
-                event_color = "#22c55e"
-                calendar_events.append({
-                    "title": f"{entry.pnl} P&L",
-                    "start": entry.date.strftime("%Y-%m-%d"),
-                    "backgroundColor": event_color,
-                    "borderColor": event_color
-                })
-            if entry.pnl < 0:
-                event_color = "#ef4444"
-                calendar_events.append({
-                    "title": f"{entry.pnl} P&L",
-                    "start": entry.date.strftime("%Y-%m-%d"),
-                    "backgroundColor": event_color,
-                    "borderColor": event_color
-                })
-            if entry.pnl == 0:
-                event_color = "#A9A9A9"
-                calendar_events.append({
-                    "title": f"{entry.pnl} P&L",
-                    "start": entry.date.strftime("%Y-%m-%d"),
-                    "backgroundColor": event_color,
-                    "borderColor": event_color
-                })
-        if entry.date >= weekly_date.date():
-            weekly_entries.append(entry.pnl)
-            recent_entries.append(entry)
-
-            
-    yearly_pnl = sum(yearly_entries)
-    monthly_pnl = sum(monthly_entries)
-    weekly_pnl = sum(weekly_entries)
-
     
-    for entry in entries: 
+
+    for entry in monthly_entries: 
+        chart_labels.append(entry.date.strftime("%Y-%m-%d"))
+        running_total += entry.pnl
+        chart_values.append(running_total)
+            
+        if entry.pnl > 0:
+            event_color = "#22c55e"
+            calendar_events.append({
+                "title": f"{entry.pnl} P&L",
+                "start": entry.date.strftime("%Y-%m-%d"),
+                "backgroundColor": event_color,
+                "borderColor": event_color
+            })
+        elif entry.pnl < 0:
+            event_color = "#ef4444"
+            calendar_events.append({
+                "title": f"{entry.pnl} P&L",
+                "start": entry.date.strftime("%Y-%m-%d"),
+                "backgroundColor": event_color,
+                "borderColor": event_color
+            })
+        else:
+            event_color = "#A9A9A9"
+            calendar_events.append({
+                "title": f"{entry.pnl} P&L",
+                "start": entry.date.strftime("%Y-%m-%d"),
+                "backgroundColor": event_color,
+                "borderColor": event_color
+            })
+
+    for entry in yearly_entries: 
         if entry.result == 'win': 
             win_count += 1
 
-    if len(entries) > 0:
-            win_rate = round((win_count / len(entries)) * 100, 2)
+    if len(yearly_entries) > 0:
+            win_rate = round((win_count / len(yearly_entries)) * 100, 2)
 
     return render_template(
         "dashboard.html", 
@@ -102,7 +93,7 @@ def dashboard():
         monthly_pnl=monthly_pnl, 
         yearly_pnl=yearly_pnl, 
         win_rate=win_rate, 
-        entries=recent_entries,
+        entries=weekly_entries,
         chart_labels=chart_labels,
         chart_values=chart_values,
         calendar_events=calendar_events)
