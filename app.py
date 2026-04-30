@@ -26,14 +26,14 @@ def index():
 
 @app.route("/dashboard")
 def dashboard():
-    entries = JournalEntry.query.order_by(JournalEntry.date.asc()).all()
-    recent_entries = []
-
     date_now = datetime.now()
     weekly_date = (date_now - timedelta(days=7))
     monthly_date = (date_now - timedelta(days=30))
     yearly_date = (date_now - timedelta(days=365))
+    entries = JournalEntry.query.filter(JournalEntry.date >= yearly_date.date()).order_by(JournalEntry.date.asc()).all()
+    recent_entries = []
     win_count = 0
+    win_rate = 0
 
     yearly_entries = []
     monthly_entries = [] 
@@ -79,8 +79,6 @@ def dashboard():
                     "backgroundColor": event_color,
                     "borderColor": event_color
                 })
-
-            print(calendar_events)
         if entry.date >= weekly_date.date():
             weekly_entries.append(entry.pnl)
             recent_entries.append(entry)
@@ -94,12 +92,9 @@ def dashboard():
     for entry in entries: 
         if entry.result == 'win': 
             win_count += 1
-        if len(entries) > 0:
+
+    if len(entries) > 0:
             win_rate = round((win_count / len(entries)) * 100, 2)
-        else:
-            win_rate = 0
-    
-    round(win_rate, 2)
 
     return render_template(
         "dashboard.html", 
