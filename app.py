@@ -41,6 +41,8 @@ def dashboard():
 
     chart_labels = []
     chart_values = []
+    running_total = 0
+
     calendar_events = []
 
 
@@ -50,7 +52,8 @@ def dashboard():
         if entry.date >= monthly_date.date():
             monthly_entries.append(entry.pnl)
             chart_labels.append(entry.date.strftime("%Y-%m-%d"))
-            chart_values.append(entry.pnl)
+            running_total += entry.pnl
+            chart_values.append(running_total)
             
             if entry.pnl > 0:
                 event_color = "#22c55e"
