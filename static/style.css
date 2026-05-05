@@ -97,3 +97,247 @@ label {
     color: #f8f9fa !important;
     text-decoration: none !important;
 }
+
+body {
+    background-color: #121212;
+    color: #f8f9fa;
+}
+ 
+.card {
+    background-color: #1e1e1e;
+    color: #f8f9fa;
+}
+ 
+.form-control,
+.form-select,
+textarea {
+    background-color: #1e1e1e;
+    color: #f8f9fa;
+    border: 1px solid #444;
+}
+ 
+.form-control:focus,
+.form-select:focus,
+textarea:focus {
+    background-color: #1e1e1e;
+    color: #f8f9fa;
+    border-color: #0d6efd;
+    box-shadow: none;
+}
+ 
+label {
+    color: #f8f9fa;
+}
+ 
+.text_positive {
+    color: #22c55e;
+}
+.text_negative {
+    color: #ef4444;
+}
+ 
+/* FullCalendar Dark Theme */
+.fc { color: #f8f9fa; }
+.fc .fc-toolbar-title { font-size: 1.25rem; font-weight: 600; }
+.fc .fc-button { background-color: #212529; border: 1px solid #495057; color: #f8f9fa; }
+.fc .fc-button:hover { background-color: #343a40; }
+.fc .fc-button-active { background-color: #0d6efd !important; border-color: #0d6efd !important; }
+.fc-theme-standard td, .fc-theme-standard th, .fc-theme-standard .fc-scrollgrid { border-color: #343a40; }
+.fc-day-grid-container.fc-scroller { height: auto !important; overflow-y: auto; }
+.fc-daygrid-day { background-color: #1e1e1e; }
+.fc-day-today { background-color: rgba(13, 110, 253, 0.15) !important; }
+.fc-event { font-size: 0.85rem; border-radius: 6px; padding: 2px 4px; font-weight: 500; }
+.fc a { color: #f8f9fa !important; text-decoration: none !important; }
+.fc-col-header-cell-cushion, .fc-daygrid-day-number { color: #f8f9fa !important; text-decoration: none !important; }
+ 
+ 
+/* ============================================
+   JOURNAL ENTRY PAGE — new styles
+   ============================================ */
+ 
+/* The metadata bar at the top */
+.meta-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.25rem;
+    background-color: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    margin-bottom: 0;
+    flex-wrap: wrap;
+}
+ 
+/* Individual label + input pairs */
+.meta-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+ 
+.meta-field label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6b7280;
+    font-weight: 500;
+}
+ 
+.meta-field input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #2d2d2d;
+    color: #f8f9fa;
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+    padding: 2px 0;
+    width: 100px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+ 
+.meta-field input:focus {
+    border-bottom-color: #4b5563;
+}
+ 
+.meta-field input[type="date"] {
+    width: 130px;
+    color-scheme: dark;
+}
+ 
+/* Vertical divider between sections */
+.meta-divider {
+    width: 1px;
+    height: 32px;
+    background-color: #2a2a2a;
+    flex-shrink: 0;
+}
+ 
+/* Win / Loss / B/E radio toggle */
+.result-toggle {
+    display: flex;
+    gap: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #2a2a2a;
+}
+ 
+/* Hide the actual radio input */
+.result-toggle input[type="radio"] {
+    display: none;
+}
+ 
+/* Style the labels as buttons */
+.result-toggle label {
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #6b7280;
+    background: transparent;
+    transition: background 0.15s, color 0.15s;
+    user-select: none;
+    letter-spacing: 0.04em;
+}
+ 
+.result-toggle label:hover {
+    color: #f8f9fa;
+}
+ 
+/* When a radio is checked, style its adjacent label */
+#result-win:checked + .toggle-win {
+    background-color: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+ 
+#result-loss:checked + .toggle-loss {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+ 
+#result-breakeven:checked + .toggle-breakeven {
+    background-color: rgba(169, 169, 169, 0.15);
+    color: #a9a9a9;
+}
+ 
+/* Save / Cancel buttons in meta bar */
+.meta-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+    align-items: center;
+}
+ 
+.btn-save {
+    background-color: #22c55e;
+    color: #0a0a0a;
+    border: none;
+    padding: 6px 18px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+    letter-spacing: 0.03em;
+}
+ 
+.btn-save:hover {
+    background-color: #16a34a;
+}
+ 
+.btn-cancel {
+    color: #6b7280;
+    font-size: 0.85rem;
+    text-decoration: none;
+    padding: 6px 10px;
+    transition: color 0.15s;
+}
+ 
+.btn-cancel:hover {
+    color: #f8f9fa;
+}
+ 
+/* ---- Writing surface ---- */
+ 
+.journal-page {
+    background-color: #141414;
+    border: 1px solid #2a2a2a;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 2.5rem 4rem;
+    min-height: 70vh;
+}
+ 
+/* The date shown as a heading above the writing area */
+.journal-date-heading {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #374151;
+    margin-bottom: 2rem;
+    font-weight: 500;
+}
+ 
+/* The invisible textarea */
+.journal-textarea {
+    width: 100%;
+    min-height: 60vh;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    color: #d1d5db;
+    font-size: 1rem;
+    line-height: 1.9;
+    font-family: 'Georgia', serif;
+    caret-color: #22c55e;
+}
+ 
+.journal-textarea::placeholder {
+    color: #2d2d2d;
+}
+ 
+/* Remove browser focus ring on the page container */
+.journal-page:focus-within {
+    border-color: #2d2d2d;
+}

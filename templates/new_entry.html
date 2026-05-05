@@ -3,73 +3,67 @@
 {% block title %}New Entry | Trade Journal{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="mb-4">
-        <h2 class="fw-bold">New Trading Journal Entry</h2>
-        <p class="text-light-emphasis mb-0">
-            Log the numbers, then reflect on the trade like a real journal.
-        </p>
+
+<form action="{{ url_for('new_entry') }}" method="POST" class="journal-form">
+
+    <!-- METADATA BAR -->
+    <div class="meta-bar">
+
+        <div class="meta-field">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required>
+        </div>
+
+        <div class="meta-divider"></div>
+
+        <div class="meta-field">
+            <label for="pnl">P&amp;L</label>
+            <input type="number" step="0.01" id="pnl" name="pnl" placeholder="0.00" required>
+        </div>
+
+        <div class="meta-field">
+            <label for="amount_risked">Risked</label>
+            <input type="number" step="0.01" id="amount_risked" name="amount_risked" placeholder="0.00" required>
+        </div>
+
+        <div class="meta-field">
+            <label for="portfolio_change">Portfolio %</label>
+            <input type="number" step="0.01" id="portfolio_change" name="portfolio_change" placeholder="0.00" required>
+        </div>
+
+        <div class="meta-divider"></div>
+
+        <!-- Radio toggle group -->
+        <div class="result-toggle">
+            <input type="radio" id="result-win" name="result" value="win" required>
+            <label for="result-win" class="toggle-win">Win</label>
+
+            <input type="radio" id="result-loss" name="result" value="loss">
+            <label for="result-loss" class="toggle-loss">Loss</label>
+
+            <input type="radio" id="result-breakeven" name="result" value="breakeven">
+            <label for="result-breakeven" class="toggle-breakeven">B/E</label>
+        </div>
+
+        <div class="meta-divider"></div>
+
+        <div class="meta-actions">
+            <a href="{{ url_for('entries') }}" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn-save">Save Entry</button>
+        </div>
+
     </div>
 
-    <form action="{{ url_for('new_entry') }}" method="POST">
-        <div class="row g-4">
-            <!-- Left side: trade details -->
-            <div class="col-lg-4">
-                <div class="card bg-dark text-light border-secondary shadow-sm h-100">
-                    <div class="card-body">
-                        <h4 class="card-title mb-3">Trade Details</h4>
-
-                        <div class="mb-3">
-                            <label for="date" class="form-label">Date</label>
-                            <input type="date" id="date" name="date"
-                                class="form-control bg-dark text-light border-secondary" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="amount_risked" class="form-label">Amount Risked</label>
-                            <input type="number" step="0.01" id="amount_risked" name="amount_risked"
-                                class="form-control bg-dark text-light border-secondary" placeholder="e.g. 100.00"
-                                required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="pnl" class="form-label">P&amp;L</label>
-                            <input type="number" step="0.01" id="pnl" name="pnl"
-                                class="form-control bg-dark text-light border-secondary" placeholder="e.g. -45.50"
-                                required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="portfolio_change" class="form-label">Portfolio Change</label>
-                            <input type="number" step="0.01" id="portfolio_change" name="portfolio_change"
-                                class="form-control bg-dark text-light border-secondary" placeholder="e.g. 1.25"
-                                required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="result" class="form-label">Result</label>
-                            <select id="result" name="result" class="form-select bg-dark text-light border-secondary"
-                                required>
-                                <option value="">Select one</option>
-                                <option value="win">Win</option>
-                                <option value="loss">Loss</option>
-                                <option value="breakeven">Break-even</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right side: journal workspace -->
-            <div class="col-lg-8">
-                <div class="card bg-dark text-light border-secondary shadow-sm h-100">
-                    <div class="card-body">
-                        <h4 class="card-title mb-3">Trade Reflection</h4>
-
-                        <label for="notes" class="form-label">Journal Entry</label>
-                        <textarea id="notes" name="notes" rows="18"
-                            class="form-control bg-dark text-light border-secondary" required>
---Setup:
+    <!-- WRITING SURFACE -->
+    <div class="journal-page">
+        <div class="journal-date-heading" id="journal-date-display">— New Entry —</div>
+        <textarea
+            id="notes"
+            name="notes"
+            class="journal-textarea"
+            placeholder="Start writing..."
+            required
+        >--Setup:
 
 
 --Reason for taking the trade:
@@ -86,21 +80,45 @@
 
 --What I should improve tomorrow:
 
-                        </textarea>
+        </textarea>
+    </div>
 
-                        <div class="form-text text-light-emphasis mt-2">
-                            Treat this like your personal trading diary, not just a data form.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+</form>
 
-        <!-- Actions -->
-        <div class="d-flex gap-2 mt-4">
-            <button type="submit" class="btn btn-primary px-4">Save Entry</button>
-            <a href="{{ url_for('entries') }}" class="btn btn-outline-light">Cancel</a>
-        </div>
-    </form>
-</div>
+<script>
+    // Auto-grow textarea as user types
+    const textarea = document.getElementById('notes');
+    textarea.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+    });
+
+    // Set today's date as default
+    const dateInput = document.getElementById('date');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.value = today;
+
+    // Update the heading display when date changes
+    const heading = document.getElementById('journal-date-display');
+    function updateHeading() {
+        if (dateInput.value) {
+            const d = new Date(dateInput.value + 'T00:00:00');
+            heading.textContent = d.toLocaleDateString('en-US', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+        }
+    }
+    dateInput.addEventListener('change', updateHeading);
+    updateHeading();
+
+    // Color PNL input as user types
+    const pnlInput = document.getElementById('pnl');
+    pnlInput.addEventListener('input', function() {
+        const val = parseFloat(this.value);
+        if (val > 0) this.style.color = '#22c55e';
+        else if (val < 0) this.style.color = '#ef4444';
+        else this.style.color = '#f8f9fa';
+    });
+</script>
+
 {% endblock %}
