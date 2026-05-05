@@ -50,34 +50,23 @@ def dashboard():
 
     
 
-    for entry in monthly_entries: 
-        chart_labels.append(entry.date.strftime("%Y-%m-%d"))
-        running_total += entry.pnl
-        chart_values.append(running_total)
-            
-        if entry.pnl > 0:
-            event_color = "#22c55e"
+    for entry in monthly_entries:
+            chart_labels.append(entry.date.strftime("%Y-%m-%d"))
+            running_total += entry.pnl
+            chart_values.append(running_total)
+
+            if entry.result == "win":
+                event_color = "#22c55e"
+            elif entry.result == "loss":
+                event_color = "#ef4444"
+            else:
+                event_color = "#A9A9A9"
+
             calendar_events.append({
-                "title": f"{entry.pnl} P&L",
                 "start": entry.date.strftime("%Y-%m-%d"),
-                "backgroundColor": event_color,
-                "borderColor": event_color
-            })
-        elif entry.pnl < 0:
-            event_color = "#ef4444"
-            calendar_events.append({
-                "title": f"{entry.pnl} P&L",
-                "start": entry.date.strftime("%Y-%m-%d"),
-                "backgroundColor": event_color,
-                "borderColor": event_color
-            })
-        else:
-            event_color = "#A9A9A9"
-            calendar_events.append({
-                "title": f"{entry.pnl} P&L",
-                "start": entry.date.strftime("%Y-%m-%d"),
-                "backgroundColor": event_color,
-                "borderColor": event_color
+                "pnl": entry.pnl,
+                "portfolio_change": entry.portfolio_change,
+                "color": event_color,
             })
 
     for entry in yearly_entries: 
