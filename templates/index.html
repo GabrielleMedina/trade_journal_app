@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome | Trade Journal{% endblock %}
+
+{% block content %}
+
+<div class="welcome-wrapper">
+
+    <!-- Animated background canvas -->
+    <canvas id="bgChart"></canvas>
+
+    <!-- Centered content -->
+    <div class="welcome-content">
+        <div class="welcome-badge">Trading Journal</div>
+        <h1 class="welcome-headline">Trade. Reflect. Improve.</h1>
+        <p class="welcome-subline">A journal built for traders who want to take their performance seriously.</p>
+        <a href="{{ url_for('dashboard') }}" class="welcome-cta">Get Started</a>
+    </div>
+
+</div>
+
+<script>
+    const canvas = document.getElementById('bgChart');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+    }
+    resize();
+
+    function generatePoints() {
+        const pts = [];
+        const count = 80;
+
+        // Start bottom left with margin, end top right with margin
+        const startX = 0;
+        const startY = canvas.height * 0.88;
+        const endX = canvas.width;
+        const endY = canvas.height * 0.12;
+
+        for (let i = 0; i < count; i++) {
+            const t = i / (count - 1);
+            // Linear interpolation from start to end
+            const baseX = startX + t * (endX - startX);
+            const baseY = startY + t * (endY - startY);
+
+            // Small random noise around the trend
+            const noiseY = (Math.random() - 0.5) * (canvas.height * 0.06);
+
+            pts.push({
+                x: baseX,
+                y: baseY + noiseY
+            });
+        }
+        return pts;
+    }
+
+    let points = generatePoints();
+    let progress = 0;
+    const speed = 0.005;
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const visibleCount = Math.floor(progress * points.length);
+        if (visibleCount < 2) {
+            progress += speed;
+            requestAnimationFrame(draw);
+            return;
+        }
+
+        const visiblePts = points.slice(0, visibleCount);
+
+        // Gradient along the line direction
+        const grad = ctx.createLinearGradient(0, canvas.height, canvas.width, 0);
+        grad.addColorStop(0, 'rgba(34, 197, 94, 0.2)');
+        grad.addColorStop(0.5, 'rgba(34, 197, 94, 0.6)');
+        grad.addColorStop(1, 'rgba(34, 197, 94, 1.0)');
+
+        // Main line
+        ctx.beginPath();
+        ctx.moveTo(visiblePts[0].x, visiblePts[0].y);
+        for (let i = 1; i < visiblePts.length; i++) {
+            ctx.lineTo(visiblePts[i].x, visiblePts[i].y);
+        }
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 2;
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+
+        // Glow layer
+        ctx.beginPath();
+        ctx.moveTo(visiblePts[0].x, visiblePts[0].y);
+        for (let i = 1; i < visiblePts.length; i++) {
+            ctx.lineTo(visiblePts[i].x, visiblePts[i].y);
+        }
+        ctx.strokeStyle = 'rgba(34, 197, 94, 0.06)';
+        ctx.lineWidth = 18;
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+
+        // Fill beneath the line
+        ctx.beginPath();
+        ctx.moveTo(visiblePts[0].x, canvas.height);
+        ctx.lineTo(visiblePts[0].x, visiblePts[0].y);
+        for (let i = 1; i < visiblePts.length; i++) {
+            ctx.lineTo(visiblePts[i].x, visiblePts[i].y);
+        }
+        ctx.lineTo(visiblePts[visiblePts.length - 1].x, canvas.height);
+        ctx.closePath();
+        const fillGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        fillGrad.addColorStop(0, 'rgba(34, 197, 94, 0.05)');
+        fillGrad.addColorStop(1, 'rgba(34, 197, 94, 0.0)');
+        ctx.fillStyle = fillGrad;
+        ctx.fill();
+
+        // Glowing dot at the tip
+        const tip = visiblePts[visiblePts.length - 1];
+        ctx.beginPath();
+        ctx.arc(tip.x, tip.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#22c55e';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(tip.x, tip.y, 12, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(34, 197, 94, 0.12)';
+        ctx.fill();
+
+        // Advance and stop at end
+        progress += speed;
+        if (progress >= 1) {
+            progress = 1;
+            // Draw one final frame at full progress then stop
+            requestAnimationFrame(draw);
+            return;
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    draw();
+</script>
+
+{% endblock %}

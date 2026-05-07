@@ -22,7 +22,7 @@ class JournalEntry(db.Model):
 
 @app.route("/")
 def index():
-    return render_template('base.html')
+    return render_template('index.html')
 
 @app.route("/dashboard")
 def dashboard():
@@ -38,6 +38,7 @@ def dashboard():
     yearly_pnl = sum([entry.pnl for entry in yearly_entries])
     monthly_pnl = sum([entry.pnl for entry in monthly_entries])
     weekly_pnl = sum([entry.pnl for entry in weekly_entries])
+    print(weekly_pnl)
 
     win_count = 0
     win_rate = 0
