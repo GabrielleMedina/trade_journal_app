@@ -3,60 +3,158 @@
 {% block title %}Entries | Trade Journal{% endblock %}
 
 {% block content %}
-<section class="d-flex justify-content-between align-items-center mb-4">
+
+<!-- PAGE HEADER -->
+<section class="entries-header mb-4">
     <div>
         <h2 class="mb-1">Journal Entries</h2>
         <p class="text-light-emphasis mb-0">Review, edit, and manage your trading journal entries.</p>
     </div>
-    <a href="{{ url_for('new_entry') }}" class="btn btn-primary">Create New Entry</a>
+    <a href="{{ url_for('new_entry') }}" class="btn-save">New Entry</a>
 </section>
 
-<section>
-    {% if entries %}
-        <div class="card p-3">
-            <div class="table-responsive">
-                <table class="table table-dark table-striped table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Amount Risked</th>
-                            <th>P&amp;L</th>
-                            <th>Portfolio Change</th>
-                            <th>Result</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for entry in entries %}
-                            <tr>
-                                <td>{{ entry.date }}</td>
-                                <td>{{ entry.amount_risked }}</td>
-                                <td>{{ entry.pnl }}</td>
-                                <td>{{ entry.portfolio_change }}</td>
-                                <td>{{ entry.result }}</td>
-                                <td>
-                                    <a href="{{ url_for('edit_entry', entry_id=entry.id) }}" class="btn btn-sm btn-warning me-2">Edit</a>
+<!-- FILTER BAR -->
+<div class="filter-bar mb-3">
 
-                                    <form action="{{ url_for('delete_entry', entry_id=entry.id) }}" onsubmit="return confirmDelete()" method="POST" class="d-inline">
-                                        <button type="submit"     class="btn btn-sm btn-danger">Delete</button>
-                                    </form>
-                                    <script> 
-                                        function confirmDelete() { 
-                                            return confirm("Are you sure you want to delete this entry?")
-                                        }
-                                    </script>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    {% else %}
-        <div class="card p-4">
-            <p class="mb-0">No entries found.</p>
-        </div>
-    {% endif %}
-</section>
+    <div class="filter-field">
+        <label>From</label>
+        <input type="date" id="filter-date-from">
+    </div>
+
+    <div class="filter-field">
+        <label>To</label>
+        <input type="date" id="filter-date-to">
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <div class="filter-field">
+        <label>Min P&amp;L</label>
+        <input type="number" step="0.01" id="filter-pnl-min" placeholder="e.g. -100">
+    </div>
+
+    <div class="filter-field">
+        <label>Max P&amp;L</label>
+        <input type="number" step="0.01" id="filter-pnl-max" placeholder="e.g. 500">
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <!-- Result filter toggle — same radio pattern as journal entry -->
+    <div class="result-toggle" id="filter-result-toggle">
+        <input type="radio" id="filter-all" name="filter-result" value="all" checked>
+        <label for="filter-all" class="toggle-all">All</label>
+
+        <input type="radio" id="filter-win" name="filter-result" value="win">
+        <label for="filter-win" class="toggle-win">Win</label>
+
+        <input type="radio" id="filter-loss" name="filter-result" value="loss">
+        <label for="filter-loss" class="toggle-loss">Loss</label>
+
+        <input type="radio" id="filter-breakeven" name="filter-result" value="breakeven">
+        <label for="filter-breakeven" class="toggle-breakeven">B/E</label>
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <button class="filter-reset" id="filter-reset">Reset</button>
+
+</div>
+
+<!-- ENTRIES TABLE -->
+{% if entries %}
+<div class="entries-wrapper">
+    <table class="entries-table" id="entries-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Result</th>
+                <th>P&amp;L</th>
+                <th>Portfolio %</th>
+                <th>Amount Risked</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in entries %}
+            <tr class="entry-row"
+                data-date="{{ entry.date }}"
+                data-pnl="{{ entry.pnl }}"
+                data-portfolio="{{ entry.portfolio_change }}"
+                data-result="{{ entry.result }}">
+
+                <td class="entry-date">{{ entry.date.strftime("%b %d, %Y") }}</td>
+
+                <td>
+                    <span class="result-badge result-badge--{{ entry.result }}">
+                        {{ entry.result }}
+                    </span>
+                </td>
+
+                <td class="entry-pnl {% if entry.pnl > 0 %}positive{% elif entry.pnl < 0 %}negative{% endif %}">
+                    {% if entry.pnl > 0 %}+${% elif entry.pnl < 0 %}-${% else %}${% endif %}{{ "%.2f"|format(entry.pnl|abs) }}
+                </td>
+
+                <td>
+                    <span class="heat-cell" data-pct="{{ entry.portfolio_change }}">
+                        {% if entry.portfolio_change > 0 %}+{% endif %}{{ "%.2f"|format(entry.portfolio_change) }}%
+                    </span>
+                </td>
+
+                <td class="entry-muted">${{ "%.2f"|format(entry.amount_risked) }}</td>
+
+                <td class="entry-actions">
+                    <a href="{{ url_for('edit_entry', entry_id=entry.id) }}" class="action-btn action-btn--edit">Edit</a>
+                    <form action="{{ url_for('delete_entry', entry_id=entry.id) }}" onsubmit="return confirm('Delete this entry?')" method="POST" class="d-inline">
+                        <button type="submit" class="action-btn action-btn--delete">Delete</button>
+                    </form>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Empty state shown by JS when filters match nothing -->
+<div class="entries-empty" id="entries-empty" style="display:none;">
+    <p>No entries match your filters.</p>
+</div>
+
+{% else %}
+<div class="entries-empty">
+    <p>No journal entries yet. <a href="{{ url_for('new_entry') }}">Create your first entry.</a></p>
+</div>
+{% endif %}
+
+<script>
+    document.querySelectorAll('.heat-cell').forEach(cell => {
+    const pct = parseFloat(cell.dataset.pct);
+    if (pct > 0 && pct <=  2) { 
+        cell.classList.add("heat-win-sm");
+        console.log(pct + "pct")
+    }
+    else if (pct > 2 && pct <= 5) { 
+        cell.classList.add("heat-win-md");
+    }
+    else if (pct > 5) { 
+        cell.classList.add("heat-win-lg");
+    }
+    else if (pct < 0 && pct >=  -2) { 
+        cell.classList.add("heat-loss-sm");
+        console.log(pct + "pct")
+    }
+    else if (pct < -2 && pct >= -5) { 
+        cell.classList.add("heat-loss-md");
+    }
+    else if (pct < -5) { 
+        cell.classList.add("heat-loss-lg");
+    }
+    else { 
+        cell.classList.add("heat-neutral")
+    }
+        
+});
+</script>
+
 {% endblock %}
-

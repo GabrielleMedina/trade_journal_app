@@ -38,7 +38,6 @@ def dashboard():
     yearly_pnl = sum([entry.pnl for entry in yearly_entries])
     monthly_pnl = sum([entry.pnl for entry in monthly_entries])
     weekly_pnl = sum([entry.pnl for entry in weekly_entries])
-    print(weekly_pnl)
 
     win_count = 0
     win_rate = 0
@@ -90,7 +89,7 @@ def dashboard():
 
 @app.route("/entries")
 def entries():
-    entries = JournalEntry.query.all()
+    entries = JournalEntry.query.order_by(JournalEntry.date.desc()).all()
     return render_template("entries.html", entries=entries)
    
 @app.route("/new_entry", methods=['POST', 'GET'])
