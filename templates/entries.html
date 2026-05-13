@@ -77,11 +77,8 @@
         </thead>
         <tbody>
             {% for entry in entries %}
-            <tr class="entry-row"
-                data-date="{{ entry.date }}"
-                data-pnl="{{ entry.pnl }}"
-                data-portfolio="{{ entry.portfolio_change }}"
-                data-result="{{ entry.result }}">
+            <tr class="entry-row" data-date="{{ entry.date }}" data-pnl="{{ entry.pnl }}"
+                data-portfolio="{{ entry.portfolio_change }}" data-result="{{ entry.result }}">
 
                 <td class="entry-date">{{ entry.date.strftime("%b %d, %Y") }}</td>
 
@@ -92,8 +89,8 @@
                 </td>
 
                 <td class="entry-pnl {% if entry.pnl > 0 %}positive{% elif entry.pnl < 0 %}negative{% endif %}">
-                    {% if entry.pnl > 0 %}+${% elif entry.pnl < 0 %}-${% else %}${% endif %}{{ "%.2f"|format(entry.pnl|abs) }}
-                </td>
+                    {% if entry.pnl > 0 %}+${% elif entry.pnl < 0 %}-${% else %}${% endif %}{{ "%.2f"
+                        |format(entry.pnl|abs) }} </td>
 
                 <td>
                     <span class="heat-cell" data-pct="{{ entry.portfolio_change }}">
@@ -104,8 +101,10 @@
                 <td class="entry-muted">${{ "%.2f"|format(entry.amount_risked) }}</td>
 
                 <td class="entry-actions">
-                    <a href="{{ url_for('edit_entry', entry_id=entry.id) }}" class="action-btn action-btn--edit">Edit</a>
-                    <form action="{{ url_for('delete_entry', entry_id=entry.id) }}" onsubmit="return confirm('Delete this entry?')" method="POST" class="d-inline">
+                    <a href="{{ url_for('edit_entry', entry_id=entry.id) }}"
+                        class="action-btn action-btn--edit">Edit</a>
+                    <form action="{{ url_for('delete_entry', entry_id=entry.id) }}"
+                        onsubmit="return confirm('Delete this entry?')" method="POST" class="d-inline">
                         <button type="submit" class="action-btn action-btn--delete">Delete</button>
                     </form>
                 </td>
@@ -129,32 +128,65 @@
 
 <script>
     document.querySelectorAll('.heat-cell').forEach(cell => {
-    const pct = parseFloat(cell.dataset.pct);
-    if (pct > 0 && pct <=  2) { 
-        cell.classList.add("heat-win-sm");
-        console.log(pct + "pct")
+        const pct = parseFloat(cell.dataset.pct);
+        if (pct > 0 && pct <= 2) {
+            cell.classList.add("heat-win-sm");
+            console.log(pct + "pct")
+        } else if (pct > 2 && pct <= 5) {
+            cell.classList.add("heat-win-md");
+        } else if (pct > 5) {
+            cell.classList.add("heat-win-lg");
+        } else if (pct < 0 && pct >= -2) {
+            cell.classList.add("heat-loss-sm");
+            console.log(pct + "pct")
+        } else if (pct < -2 && pct >= -5) {
+            cell.classList.add("heat-loss-md");
+        } else if (pct < -5) {
+            cell.classList.add("heat-loss-lg");
+        } else {
+            cell.classList.add("heat-neutral")
+        }
+    });
+
+    document.getElementById('filter-date-from').addEventListener('change', applyFilters);
+    document.getElementById('filter-date-to').addEventListener('change', applyFilters);
+    document.getElementById('filter-pnl-min').addEventListener('input', applyFilters);
+    document.getElementById('filter-pnl-max').addEventListener('input', applyFilters);
+    document.getElementById('filter-result-toggle').addEventListener('change', applyFilters);
+    document.getElementById('filter-reset').addEventListener('click', resetFilters);
+
+
+    function applyFilters() {
+        var dateFrom = document.getElementById('filter-date-from').value;
+        var dateTo = document.getElementById('filter-date-to').value;
+        var pnlMin = document.getElementById('filter-pnl-min').value;
+        var pnlMax = document.getElementById('filter-pnl-max').value;
+        var filterResult = document.querySelector('input[name="filter-result"]:checked').value;
+
+        document.querySelectorAll('.entry-row').forEach(entry => {
+            let visible = true;
+            const pnl = parseFloat(entry.dataset.pnl);
+            const date = entry.dataset.date;
+            const result = entry.dataset.result
+            if (pnlMin !== '' && pnl < parseFloat(pnlMin)) visible = false;
+            if (pnlMax !== '' && pnl > parseFloat(pnlMax)) visible = false;
+            if (dateTo !== '' && date > dateTo) visible = false;
+            if (dateFrom !== '' && date < dateFrom) visible = false;
+            if (filterResult !== 'all' && result !== filterResult) visible = false;
+
+            entry.style.display = visible ? '' : 'none';
+        })}
+    
+    function resetFilters() {
+        document.getElementById('filter-date-from').value = '';
+        document.getElementById('filter-date-to').value = '';
+        document.getElementById('filter-pnl-min').value = '';
+        document.getElementById('filter-pnl-max').value = '';
+        document.getElementById('filter-all').checked = true;
+
+        applyFilters()
     }
-    else if (pct > 2 && pct <= 5) { 
-        cell.classList.add("heat-win-md");
-    }
-    else if (pct > 5) { 
-        cell.classList.add("heat-win-lg");
-    }
-    else if (pct < 0 && pct >=  -2) { 
-        cell.classList.add("heat-loss-sm");
-        console.log(pct + "pct")
-    }
-    else if (pct < -2 && pct >= -5) { 
-        cell.classList.add("heat-loss-md");
-    }
-    else if (pct < -5) { 
-        cell.classList.add("heat-loss-lg");
-    }
-    else { 
-        cell.classList.add("heat-neutral")
-    }
-        
-});
+
 </script>
 
 {% endblock %}
