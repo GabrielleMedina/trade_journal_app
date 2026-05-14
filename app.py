@@ -27,7 +27,7 @@ def index():
 @app.route("/dashboard")
 def dashboard():
     date_now = datetime.now()
-    weekly_date = (date_now - timedelta(days=7))
+    weekly_date = date_now - timedelta(days=date_now.weekday())
     monthly_date = (date_now - timedelta(days=30))
     yearly_date = (date_now - timedelta(days=365))
 
