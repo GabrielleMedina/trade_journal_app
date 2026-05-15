@@ -2,6 +2,8 @@ from flask import Flask, render_template, url_for, request, redirect
 import uuid
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///trade.db'
@@ -9,6 +11,7 @@ db = SQLAlchemy(app)
 
 class JournalEntry(db.Model): 
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date = db.Column(db.Date)
     amount_risked =  db.Column(db.Float, default = 0)
     pnl = db.Column(db.Float, default = 0)
@@ -18,7 +21,19 @@ class JournalEntry(db.Model):
 
     def __repr__(self):
         return '<JournalEntry %r>' % self.id
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20))
+    email = db.Column(db.String(50), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128))
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
     
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
 
 @app.route("/")
 def index():
