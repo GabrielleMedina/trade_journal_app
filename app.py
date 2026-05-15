@@ -2,13 +2,23 @@ from flask import Flask, render_template, url_for, request, redirect
 import uuid
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///trade.db'
+app.config['SECRET_KEY'] = '4ec41c0811362eafa02f05a38ca8e259cdcdf817cdfe0fe8103968c768c347cc'
 db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 class JournalEntry(db.Model): 
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date = db.Column(db.Date)
     amount_risked =  db.Column(db.Float, default = 0)
     pnl = db.Column(db.Float, default = 0)
@@ -18,6 +28,18 @@ class JournalEntry(db.Model):
 
     def __repr__(self):
         return '<JournalEntry %r>' % self.id
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20))
+    email = db.Column(db.String(50), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128))
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
     
 
 @app.route("/")
@@ -25,15 +47,16 @@ def index():
     return render_template('index.html')
 
 @app.route("/dashboard")
+@login_required
 def dashboard():
     date_now = datetime.now()
     weekly_date = date_now - timedelta(days=date_now.weekday())
     monthly_date = (date_now - timedelta(days=30))
     yearly_date = (date_now - timedelta(days=365))
 
-    yearly_entries = JournalEntry.query.filter(JournalEntry.date >= yearly_date.date()).order_by(JournalEntry.date.asc()).all()
-    monthly_entries = JournalEntry.query.filter(JournalEntry.date >= monthly_date.date()).order_by(JournalEntry.date.asc()).all()
-    weekly_entries = JournalEntry.query.filter(JournalEntry.date >= weekly_date.date()).order_by(JournalEntry.date.asc()).all()
+    yearly_entries = JournalEntry.query.filter(JournalEntry.date >= yearly_date.date(), JournalEntry.user_id == current_user.id).order_by(JournalEntry.date.asc()).all()
+    monthly_entries = JournalEntry.query.filter(JournalEntry.date >= monthly_date.date(), JournalEntry.user_id == current_user.id).order_by(JournalEntry.date.asc()).all()
+    weekly_entries = JournalEntry.query.filter(JournalEntry.date >= weekly_date.date(), JournalEntry.user_id == current_user.id).order_by(JournalEntry.date.asc()).all()
 
     yearly_pnl = sum([entry.pnl for entry in yearly_entries])
     monthly_pnl = sum([entry.pnl for entry in monthly_entries])
@@ -88,11 +111,13 @@ def dashboard():
         calendar_events=calendar_events)
 
 @app.route("/entries")
+@login_required
 def entries():
-    entries = JournalEntry.query.order_by(JournalEntry.date.desc()).all()
+    entries = JournalEntry.query.filter(JournalEntry.user_id == current_user.id).order_by(JournalEntry.date.desc()).all()
     return render_template("entries.html", entries=entries)
    
 @app.route("/new_entry", methods=['POST', 'GET'])
+@login_required
 def new_entry():
     if request.method == 'POST':
         form_date = datetime.strptime(request.form['date'], "%Y-%m-%d").date()
@@ -103,6 +128,7 @@ def new_entry():
         form_notes = request.form['notes'].strip()
         
         new_entry = JournalEntry(
+            user_id = current_user.id,
             date = form_date,
             amount_risked = form_amount_risked,
             pnl = form_pnl,
@@ -119,6 +145,7 @@ def new_entry():
     return render_template("new_entry.html")
 
 @app.route("/edit_entry/<int:entry_id>", methods=["GET", "POST"])
+@login_required
 def edit_entry(entry_id):
     entry = db.get_or_404(JournalEntry, entry_id)
     if request.method == 'POST':
@@ -147,6 +174,7 @@ def edit_entry(entry_id):
 
 
 @app.route('/delete_entry/<int:entry_id>', methods=["POST"])
+@login_required
 def delete_entry(entry_id):
     entry = db.get_or_404(JournalEntry, entry_id)
     try: 
