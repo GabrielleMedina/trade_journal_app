@@ -1,9 +1,10 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect, flash
 import uuid
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///trade.db'
@@ -45,6 +46,50 @@ class User(UserMixin, db.Model):
 @app.route("/")
 def index():
     return render_template('index.html')
+
+
+@app.route("/register", methods=['POST', 'GET'])
+def register():
+    if request.method == 'POST':
+        
+
+
+        form_email = request.form['email'].strip()
+        form_username = request.form['username'].strip()
+        form_password = request.form['password'].strip()
+        
+        existing_user = User.query.filter_by(email=form_email).first()
+        if existing_user:
+            flash("An account with that email has already been made", 'error')
+            return redirect(url_for('register'))
+        
+        if len(form_password) < 8:
+            flash("Password must be greater than 8.", 'error')
+            return redirect(url_for('register'))
+        
+        has_upper = any(char.isupper() for char in form_password)
+        has_lower = any(char.islower() for char in form_password)
+        has_digit = any(char.isdigit() for char in form_password)
+        has_special = any(not char.isalnum() for char in form_password)
+
+        if not all([has_upper, has_lower, has_digit, has_special]):
+            flash('Password must contain uppercase, lowercase, numbers and a special character.', 'error')
+            return redirect(url_for('register'))
+
+        new_user = User(
+            username = form_username,
+            email = form_email
+        )
+        new_user.set_password(form_password)
+
+        try: 
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect(url_for("login"))
+        except:
+            return 'There was an issue adding your new entry.'
+    return render_template("login.html")
+
 
 @app.route("/dashboard")
 @login_required
