@@ -17,38 +17,43 @@
 
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark border-bottom border-secondary">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('dashboard') }}">Trade Journal</a>
+    {% if current_user.is_authenticated %}
+    <nav class="app-nav">
+        <div class="app-nav__inner">
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <!-- Brand -->
+            <a class="app-nav__brand" href="{{ url_for('dashboard') }}">
+                <span class="app-nav__brand-dot"></span>
+                Trade Journal
+            </a>
 
-            <div class="collapse navbar-collapse" id="navMenu">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('entries') }}">Entries</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('new_entry') }}">New Entry</a>
-                    </li>
-                </ul>
+            <!-- Links -->
+            <ul class="app-nav__links">
+                <li>
+                    <a class="app-nav__link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                </li>
+                <li>
+                    <a class="app-nav__link" href="{{ url_for('entries') }}">Entries</a>
+                </li>
+                <li>
+                    <a class="app-nav__link" href="{{ url_for('new_entry') }}">New Entry</a>
+                </li>
+            </ul>
+
+            <!-- User section -->
+            <div class="app-nav__user">
+                <span class="app-nav__username">{{ current_user.username }}</span>
+                <a class="app-nav__logout" href="{{ url_for('logout') }}">Logout</a>
             </div>
+
         </div>
     </nav>
+    {% endif %}
 
     <!-- Main Content -->
     <main class="container py-4">
-
         {% block content %}
-        <!-- Child templates go here -->
         {% endblock %}
-
     </main>
 
     <!-- Bootstrap JS -->
