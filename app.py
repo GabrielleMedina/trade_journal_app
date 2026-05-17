@@ -1,10 +1,14 @@
+from dotenv import load_dotenv
+load_dotenv()
+
+import os
 from flask import Flask, render_template, url_for, request, redirect, flash
 import uuid
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-import os
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///trade.db'
