@@ -4,11 +4,11 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-
+import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///trade.db'
-app.config['SECRET_KEY'] = '4ec41c0811362eafa02f05a38ca8e259cdcdf817cdfe0fe8103968c768c347cc'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -51,9 +51,6 @@ def index():
 @app.route("/register", methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
-        
-
-
         form_email = request.form['email'].strip()
         form_username = request.form['username'].strip()
         form_password = request.form['password'].strip()
