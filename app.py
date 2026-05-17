@@ -17,7 +17,8 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-with app.app_context():
+@app.before_request
+def create_tables():
     db.create_all()
 
 @login_manager.user_loader
