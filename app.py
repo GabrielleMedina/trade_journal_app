@@ -248,3 +248,7 @@ def delete_entry(entry_id):
         return redirect(url_for("entries"))
     except:
         return 'There was an issue removing your entry.'
+
+
+with app.app_context():
+    db.create_all()
