@@ -91,8 +91,8 @@ def register():
             db.session.add(new_user)
             db.session.commit()
             return redirect(url_for("login"))
-        except:
-            return 'There was an issue adding your new entry.'
+        except Exception as e:
+            return f'Error: {str(e)}'
     return render_template("register.html")
 
 @app.route("/login", methods=['GET', 'POST'])
