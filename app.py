@@ -52,11 +52,15 @@ class User(UserMixin, db.Model):
 
 @app.route("/")
 def index():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
     return render_template('index.html')
 
 
 @app.route("/register", methods=['POST', 'GET'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
     if request.method == 'POST':
         form_email = request.form['email'].strip()
         form_username = request.form['username'].strip()
@@ -101,6 +105,8 @@ def register():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
