@@ -19,6 +19,7 @@ login_manager.login_view = 'login'
 
 @app.before_request
 def create_tables():
+    db.drop_all()
     db.create_all()
 
 @login_manager.user_loader
@@ -42,7 +43,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20))
     email = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(512))
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
