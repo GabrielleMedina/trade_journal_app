@@ -19,7 +19,6 @@ login_manager.login_view = 'login'
 
 @app.before_request
 def create_tables():
-    db.drop_all()
     db.create_all()
 
 @login_manager.user_loader
