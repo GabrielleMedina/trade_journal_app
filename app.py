@@ -286,3 +286,9 @@ def delete_entry(entry_id):
         db.session.rollback()
         flash('Something went wrong deleting your entry. Please try again.', 'error')
         return redirect(url_for('entries'))
+    
+@app.route("/view_entry/<int:entry_id>")
+@login_required
+def view_entry(entry_id):
+    entry = db.get_or_404(JournalEntry, entry_id)
+    return render_template("view_entry.html", entry=entry)
