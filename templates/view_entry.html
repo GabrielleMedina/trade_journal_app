@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}View Entry | Trade Journal{% endblock %}
+
+{% block content %}
+
+<!-- Marked.js CDN for markdown rendering -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- METADATA BAR — read only -->
+<div class="meta-bar mb-0">
+
+    <div class="meta-field">
+        <label>Date</label>
+        <span class="meta-value">{{ entry.date.strftime("%b %d, %Y") }}</span>
+    </div>
+
+    <div class="meta-divider"></div>
+
+    <div class="meta-field">
+        <label>P&amp;L</label>
+        <span class="meta-value {% if entry.pnl > 0 %}text_positive{% elif entry.pnl < 0 %}text_negative{% endif %}">
+            {% if entry.pnl > 0 %}+{% elif entry.pnl < 0 %}-{% endif %}${{ "%.2f"|format(entry.pnl|abs) }}
+        </span>
+    </div>
+
+    <div class="meta-field">
+        <label>Risked</label>
+        <span class="meta-value">${{ "%.2f"|format(entry.amount_risked) }}</span>
+    </div>
+
+    <div class="meta-field">
+        <label>Portfolio %</label>
+        <span class="meta-value {% if entry.portfolio_change > 0 %}text_positive{% elif entry.portfolio_change < 0 %}text_negative{% endif %}">
+            {% if entry.portfolio_change > 0 %}+{% endif %}{{ "%.2f"|format(entry.portfolio_change) }}%
+        </span>
+    </div>
+
+    <div class="meta-divider"></div>
+
+    <div class="result-badge result-badge--{{ entry.result }} ms-1">
+        {{ entry.result }}
+    </div>
+
+    <div class="meta-actions">
+        <a href="{{ url_for('edit_entry', entry_id=entry.id) }}" class="action-btn action-btn--edit">Edit</a>
+        <a href="{{ url_for('entries') }}" class="btn-cancel">Back</a>
+    </div>
+
+</div>
+
+<!-- READING SURFACE -->
+<div class="journal-page">
+    <div class="journal-date-heading">
+        {{ entry.date.strftime("%A, %B %d, %Y") }}
+    </div>
+
+    <!-- This div will be filled by JS with rendered markdown -->
+    <div id="notes-display" class="journal-rendered"></div>
+
+    <!-- Hidden element holding the raw notes for JS to read -->
+    <div id="notes-raw" style="display:none;">{{ entry.notes }}</div>
+</div>
+
+<script>
+const raw = document.getElementById('notes-raw').textContent;
+document.getElementById('notes-display').innerHTML = marked.parse(raw);
+</script>
+
+{% endblock %}
