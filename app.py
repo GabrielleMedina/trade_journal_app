@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
-from flask import Flask, render_template, url_for, request, redirect, flash
+from flask import Flask, render_template, url_for, request, redirect, flash, abort
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
@@ -19,7 +19,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-def create_tables():
+with app.app_context():
     db.create_all()
 
 @login_manager.user_loader
@@ -247,6 +247,8 @@ def new_entry():
 @login_required
 def edit_entry(entry_id):
     entry = db.get_or_404(JournalEntry, entry_id)
+    if entry.user_id != current_user.id:
+        abort(403)
     if request.method == 'POST':
         form_date = datetime.strptime(request.form['date'], "%Y-%m-%d").date()
         form_amount_risked = float(request.form['amount_risked'])
@@ -277,6 +279,8 @@ def edit_entry(entry_id):
 @login_required
 def delete_entry(entry_id):
     entry = db.get_or_404(JournalEntry, entry_id)
+    if entry.user_id != current_user.id:
+        abort(403)
     try: 
         db.session.delete(entry)
         db.session.commit()
@@ -290,4 +294,6 @@ def delete_entry(entry_id):
 @login_required
 def view_entry(entry_id):
     entry = db.get_or_404(JournalEntry, entry_id)
+    if entry.user_id != current_user.id:
+        abort(403)
     return render_template("view_entry.html", entry=entry)
